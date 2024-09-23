@@ -1,15 +1,23 @@
-C = gcc
-FLAGS = -std=c99 -Wall -Werror
+C = g++
+FLAGS = -std=c++11 -Wall -Werror
 LDFLAGS = -lpthread
 
-all: mmcopier mscopier
-mmcopier: mmcopier.o
-	$(C) mmcopier.o -o mmcopier $(LDFLAGS)
-mscopier: mscopier.o
-	$(C) mscopier.o -o mscopier $(LDFLAGS)
-mmcopier.o: mmcopier.c 
-	$(C) $(FLAGS) -c mmcopier.c -o mmcopier.o
-mscopier.o: mscopier.c 
-	$(C) $(FLAGS) -c mscopier.c -o mscopier.o
+all: firstfit bestfit
+
+firstfit: main.o memory_allocator.o strategy.o
+	$(C) main.o memory_allocator.o strategy.o -o firstfit $(LDFLAGS)
+
+bestfit: main.o memory_allocator.o strategy.o
+	$(C) main.o memory_allocator.o strategy.o -o bestfit $(LDFLAGS)
+
+main.o: main.cpp memory_allocator.h
+	$(C) $(FLAGS) -c main.cpp -o main.o
+
+memory_allocator.o: memory_allocator.cpp memory_allocator.h
+	$(C) $(FLAGS) -c memory_allocator.cpp -o memory_allocator.o
+
+strategy.o: strategy.cpp memory_allocator.h
+	$(C) $(FLAGS) -c strategy.cpp -o strategy.o
+
 clean:
-	rm -rf *.o mmcopier mscopier
+	rm -rf *.o firstfit bestfit
