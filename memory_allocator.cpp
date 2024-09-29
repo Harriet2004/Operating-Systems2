@@ -10,6 +10,8 @@ allocation *free_list = nullptr;
 allocation *allocated_list = nullptr;
 AllocationStrategy current_strategy;
 
+bool error_occurred = false;
+
 // Function to round up the requested size to the nearest partition (32, 64, 128, 256, or 512)
 std::size_t get_partition_size(std::size_t requested_size) {
     if (requested_size <= 32) return 32;
@@ -111,8 +113,7 @@ void print_allocated_list() {
     printf("Allocated List:\n");
 
     while (current != nullptr) {
-        printf("Address: %p, Total Size: %zu bytes, Used Size: %zu bytes\n", 
-               current->space, current->partition_size, current->requested_size);
+        printf("Address: %p, Total Size: %zu bytes, Used Size: %zu bytes\n", current->space, current->partition_size, current->requested_size);
         current = current->next;
     }
 }
@@ -136,6 +137,7 @@ void process_datafile(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         printf("Error: Could not open file %s\n", filename);
+        error_occurred = true;
         return;
     }
 
@@ -148,6 +150,12 @@ void process_datafile(const char *filename) {
             // Allocate memory and store the address in the stack
             void *ptr = alloc(size);
             allocated_stack.push(ptr);  // Push the allocated address to the stack
+            if (ptr == nullptr) {
+                printf("Error: Memory allocation failed\n");
+                error_occurred = true;  // Set error flag
+                fclose(file);
+                return;  // Exit on allocation error
+            }
         } else if (strcmp(command, "dealloc") == 0) {
             // Deallocate the most recent allocation (LIFO)
             if (!allocated_stack.empty()) {
@@ -156,6 +164,9 @@ void process_datafile(const char *filename) {
                 dealloc(address_to_free);
             } else {
                 printf("Error: No more memory to deallocate\n");
+                error_occurred = true;
+                fclose(file);
+                return;
             }
         }
     }

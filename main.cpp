@@ -24,8 +24,10 @@ int main(int argc, char *argv[]) {
     process_datafile(argv[1]);
 
     // At the end, print the allocated and free lists
-    print_allocated_list();
-    print_free_list();
+    if (!error_occurred) {
+        print_allocated_list();
+        print_free_list();
+    }
 
     return 0;
 }

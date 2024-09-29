@@ -11,7 +11,6 @@ struct allocation {
     allocation *next;           // Next allocation in the list
 };
 
-
 // Enum for allocation strategies
 enum AllocationStrategy
 {
@@ -33,5 +32,6 @@ allocation *best_fit(std::size_t chunk_size);
 // Global variables for free and allocated lists
 extern allocation *free_list;
 extern allocation *allocated_list;
+extern bool error_occurred;
 
 #endif
