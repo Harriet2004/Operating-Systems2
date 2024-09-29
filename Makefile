@@ -1,5 +1,5 @@
 C = g++
-FLAGS = -std=c++11 -Wall -Werror
+FLAGS = -std=c++11 -Wall -Werror -Wno-deprecated-declarations
 LDFLAGS = -lpthread
 
 all: firstfit bestfit

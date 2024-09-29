@@ -2,32 +2,30 @@
 #include <cstring> // Required for strcmp
 #include <cstdio>
 
-int main(int argc, char *argv[])
-{
-    // Check for arguments (e.g., firstfit or bestfit)
-    if (argc != 3)
-    {
-        printf("Usage: %s <allocation_strategy> <datafile>\n", argv[0]);
+int main(int argc, char *argv[]) {
+    
+    // Check if the correct number of arguments is provided
+    if (argc != 2) {
+        printf("Usage: %s <datafile>\n", argv[0]);
         return 1;
     }
 
-    // Load memory allocation strategy based on argv[1]
-    if (strcmp(argv[1], "firstfit") == 0)
-    {
+    // Parse the allocation strategy (firstfit or bestfit)
+    if (strcmp(argv[0], "./firstfit") == 0) {
         set_allocation_strategy(FIRST_FIT);
-    }
-    else if (strcmp(argv[1], "bestfit") == 0)
-    {
+    } else if (strcmp(argv[0], "./bestfit") == 0) {
         set_allocation_strategy(BEST_FIT);
-    }
-    else
-    {
-        printf("Error: Invalid allocation strategy\n");
+    } else {
+        printf("Error: Invalid allocation strategy '%s'. Use 'firstfit' or 'bestfit'.\n", argv[1]);
         return 1;
     }
 
-    // Call functions to handle allocations and deallocations
-    process_datafile(argv[2]);
+    // Process the datafile containing alloc and dealloc commands
+    process_datafile(argv[1]);
+
+    // At the end, print the allocated and free lists
+    print_allocated_list();
+    print_free_list();
 
     return 0;
 }
