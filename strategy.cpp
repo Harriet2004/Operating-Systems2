@@ -2,15 +2,15 @@
 #include <list>  // For std::list
 
 allocation *first_fit(std::size_t chunk_size) {
-    // Declare an explicit iterator for the free_list
-    std::list<allocation>::iterator it = free_list.begin();
+    // Traverse the free list using an iterator
+    std::list<allocation*>::iterator it = free_list.begin();
 
-    // Traverse the free list using a while loop and an explicit iterator
+    // Iterate through the list of pointers to find a suitable chunk
     while (it != free_list.end()) {
-        if (it->partition_size >= chunk_size) {
-            return &(*it);  // Return the address of the found chunk
+        if ((*it)->partition_size >= chunk_size) {
+            return *it;  // Return the pointer to the found chunk
         }
-        ++it;  // Move to the next element in the list
+        ++it;
     }
 
     // No suitable chunk found, return nullptr
@@ -20,18 +20,18 @@ allocation *first_fit(std::size_t chunk_size) {
 allocation *best_fit(std::size_t chunk_size) {
     allocation *best_chunk = nullptr;
 
-    // Declare an explicit iterator for the free_list
-    std::list<allocation>::iterator it = free_list.begin();
+    // Traverse the free list using an iterator
+    std::list<allocation*>::iterator it = free_list.begin();
 
-    // Traverse the free list using a while loop and an explicit iterator
+    // Iterate through the list of pointers to find the best chunk
     while (it != free_list.end()) {
-        if (it->partition_size >= chunk_size) {
+        if ((*it)->partition_size >= chunk_size) {
             // Check if this chunk is smaller than the current best chunk
-            if (best_chunk == nullptr || it->partition_size < best_chunk->partition_size) {
-                best_chunk = &(*it);  // Update the best chunk found so far
+            if (best_chunk == nullptr || (*it)->partition_size < best_chunk->partition_size) {
+                best_chunk = *it;  // Update best chunk
             }
         }
-        ++it;  // Move to the next element in the list
+        ++it;
     }
 
     // Return the best fitting chunk, or nullptr if none is found

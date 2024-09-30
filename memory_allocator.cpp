@@ -6,8 +6,8 @@
 #include <list>
 
 // Global variables for free list and allocated list
-std::list<allocation> free_list;  // Using std::list for free chunks
-std::list<allocation> allocated_list;  // Using std::list for allocated chunks
+std::list<allocation*> free_list;  // Using std::list for free chunks
+std::list<allocation*> allocated_list;  // Using std::list for allocated chunks
 AllocationStrategy current_strategy;
 
 bool error_occurred = false;
@@ -26,62 +26,61 @@ void *alloc(std::size_t requested_size) {
     std::size_t chunk_size = get_partition_size(requested_size);
 
     // Step 2: Search the free list for a suitable chunk
-    allocation selected_chunk;
-    std::list<allocation>::iterator it = free_list.begin();  // Explicitly declare the iterator type
-
-    while (it != free_list.end()) {  // Use a traditional while loop
-        if (it->partition_size >= chunk_size) {
-            selected_chunk = *it;      // Found a suitable chunk
+    allocation* selected_chunk = nullptr;
+    auto it = free_list.begin();
+    for (; it != free_list.end(); ++it) {
+        if ((*it)->partition_size >= chunk_size) {
+            selected_chunk = *it;      // Found a suitable chunk (pointer)
             free_list.erase(it);       // Remove from the free list
-            break;  // Exit the loop after finding the suitable chunk
+            break;
         }
-        ++it;  // Move to the next item in the list
     }
 
     // Step 3: If no suitable chunk is found, request memory from the OS
-    if (it == free_list.end()) {
+    if (selected_chunk == nullptr) {
         void *new_memory = sbrk(chunk_size);
         if (new_memory == (void *)-1) {
             printf("Error: Memory allocation failed\n");
             return nullptr;
         }
-        selected_chunk.partition_size = chunk_size;
-        selected_chunk.requested_size = requested_size;
-        selected_chunk.space = new_memory;
+        selected_chunk = new allocation;  // Dynamically allocate memory for allocation struct
+        selected_chunk->partition_size = chunk_size;
+        selected_chunk->requested_size = requested_size;
+        selected_chunk->space = new_memory;
     } else {
-        selected_chunk.requested_size = requested_size;
+        selected_chunk->requested_size = requested_size;
     }
 
-    // Step 4: Add the chunk to the allocated list
-    allocated_list.push_back(selected_chunk);  // Add to the allocated list
+    // Step 4: Add the chunk to the allocated list (as a pointer)
+    allocated_list.push_back(selected_chunk);
 
-    return selected_chunk.space;
+    return selected_chunk->space;
 }
+
 
 void dealloc(void *chunk) {
-    // Step 1: Declare an iterator for the allocated list
-    std::list<allocation>::iterator it = allocated_list.begin();
-
-    // Step 2: Find the chunk in the allocated list
+    // Step 1: Find and remove the chunk from the allocated list
+    std::list<allocation*>::iterator it = allocated_list.begin();
     while (it != allocated_list.end()) {
-        if (it->space == chunk) {
+        if ((*it)->space == chunk) {
             break;  // Found the chunk
         }
-        ++it;  // Move to the next element
+        ++it;
     }
 
-    // Step 3: If we reached the end without finding the chunk, it's an error
+    // Step 2: Error handling if the chunk is not found
     if (it == allocated_list.end()) {
         printf("Error: Attempt to deallocate unallocated memory at %p\n", chunk);
-        return;
+        exit(EXIT_FAILURE);
     }
 
-    // Step 4: Add the chunk back to the free list
-    free_list.push_back(*it);  // Add the chunk to the free list
+    // Step 3: Add the chunk to the free list (as a pointer)
+    free_list.push_back(*it);  // Add the pointer to the free list
 
-    // Step 5: Remove the chunk from the allocated list
-    allocated_list.erase(it);  // Erase the chunk from the allocated list
+    // Step 4: Remove the chunk from the allocated list
+    allocated_list.erase(it);
 }
+
 
 // Function to set the current allocation strategy (First-Fit or Best-Fit)
 void set_allocation_strategy(AllocationStrategy strategy) {
@@ -90,21 +89,15 @@ void set_allocation_strategy(AllocationStrategy strategy) {
 
 void print_allocated_list() {
     printf("Allocated List:\n");
-    // Explicitly use iterators to go through the allocated_list
-    std::list<allocation>::iterator it = allocated_list.begin();
-    while (it != allocated_list.end()) {
-        printf("Address: %p, Total Size: %zu bytes, Used Size: %zu bytes\n", it->space, it->partition_size, it->requested_size);
-        ++it;  // Move to the next element in the list
+    for (allocation* a : allocated_list) {
+        printf("Address: %p, Total Size: %zu bytes, Used Size: %zu bytes\n", a->space, a->partition_size, a->requested_size);
     }
 }
 
 void print_free_list() {
     printf("Free List:\n");
-    // Explicitly use iterators to go through the free_list
-    std::list<allocation>::iterator it = free_list.begin();
-    while (it != free_list.end()) {
-        printf("Address: %p, Total Size: %zu bytes\n", it->space, it->partition_size);
-        ++it;  // Move to the next element in the list
+    for (allocation* a : free_list) {
+        printf("Address: %p, Total Size: %zu bytes\n", a->space, a->partition_size);
     }
 }
 

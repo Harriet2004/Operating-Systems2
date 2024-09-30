@@ -30,8 +30,8 @@ allocation *first_fit(std::size_t chunk_size);
 allocation *best_fit(std::size_t chunk_size);
 
 // Global variables for free and allocated lists
-extern std::list<allocation> free_list;  
-extern std::list<allocation> allocated_list;
+extern std::list<allocation*> free_list;  
+extern std::list<allocation*> allocated_list;
 extern bool error_occurred;
 
 #endif
