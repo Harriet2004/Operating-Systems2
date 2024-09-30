@@ -37,18 +37,19 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Processes the datafile with alloc and dealloc commands
-    if (!process_datafile(argv[1]))
-    {
-        printf("Error: Failed to process datafile '%s'.\n", argv[1]);
-        return 1;
-    }
+    // Process the datafile with alloc and dealloc commands
+    process_datafile(argv[1]); // Call process_datafile without checking a return value
 
     // Prints the allocated and free memory lists
     if (!error_occurred)
     {
         print_allocated_list();
         print_free_list();
+    }
+    else
+    {
+        printf("Error: Failed to process datafile '%s'.\n", argv[1]);
+        return 1;
     }
 
     return 0;
