@@ -1,36 +1,37 @@
 #include "memory_allocator.h"
+#include <list>  // For std::list
 
-// Implement First-Fit strategy
 allocation *first_fit(std::size_t chunk_size) {
-    allocation *current = free_list;
+    // Declare an explicit iterator for the free_list
+    std::list<allocation>::iterator it = free_list.begin();
 
-    // Traverse the free list
-    while (current != nullptr) {
-        if (current->partition_size >= chunk_size) {  // Use partition_size
-            // If the current chunk is large enough, return it
-            return current;
+    // Traverse the free list using a while loop and an explicit iterator
+    while (it != free_list.end()) {
+        if (it->partition_size >= chunk_size) {
+            return &(*it);  // Return the address of the found chunk
         }
-        current = current->next;  // Move to the next chunk
+        ++it;  // Move to the next element in the list
     }
 
     // No suitable chunk found, return nullptr
     return nullptr;
 }
 
-// Implement Best-Fit strategy
 allocation *best_fit(std::size_t chunk_size) {
-    allocation *current = free_list;
-    allocation *best_chunk = nullptr;  // Track the best chunk (smallest sufficient)
+    allocation *best_chunk = nullptr;
 
-    // Traverse the free list
-    while (current != nullptr) {
-        if (current->partition_size >= chunk_size) {  // Use partition_size
-            // If this chunk fits, check if it's the smallest so far
-            if (best_chunk == nullptr || current->partition_size < best_chunk->partition_size) {
-                best_chunk = current;  // Update best chunk
+    // Declare an explicit iterator for the free_list
+    std::list<allocation>::iterator it = free_list.begin();
+
+    // Traverse the free list using a while loop and an explicit iterator
+    while (it != free_list.end()) {
+        if (it->partition_size >= chunk_size) {
+            // Check if this chunk is smaller than the current best chunk
+            if (best_chunk == nullptr || it->partition_size < best_chunk->partition_size) {
+                best_chunk = &(*it);  // Update the best chunk found so far
             }
         }
-        current = current->next;  // Move to the next chunk
+        ++it;  // Move to the next element in the list
     }
 
     // Return the best fitting chunk, or nullptr if none is found
