@@ -27,8 +27,7 @@ std::size_t get_partition_size(std::size_t requested_size)
     return 512; // Anything larger rounds to 512
 }
 
-void *alloc(std::size_t requested_size)
-{
+void *alloc(std::size_t requested_size) {
     // Step 1: Get the appropriate partition size
     std::size_t chunk_size = get_partition_size(requested_size);
 
@@ -64,6 +63,7 @@ void *alloc(std::size_t requested_size)
 
     return selected_chunk->space;
 }
+
 void dealloc(void *chunk) {
     // Step 1: Find and remove the chunk from the allocated list
     std::list<allocation *>::iterator it = allocated_list.begin();
@@ -77,7 +77,8 @@ void dealloc(void *chunk) {
     // Step 2: Error handling if the chunk is not found
     if (it == allocated_list.end()) {
         printf("Error: Attempt to deallocate unallocated memory at %p\n", chunk);
-        exit(EXIT_FAILURE);
+        error_occurred = true;
+        return;
     }
 
     // Step 3: Add the chunk to the free list (as a pointer)

@@ -39,7 +39,6 @@ int main(int argc, char *argv[]) {
         print_free_list();
     }
     else {
-        printf("Error: Failed to process datafile '%s'.\n", argv[1]);
         return EXIT_FAILURE;
     }
 
