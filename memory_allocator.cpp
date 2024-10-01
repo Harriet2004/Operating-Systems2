@@ -1,17 +1,17 @@
 #include "memory_allocator.h"
-#include <cstdio>   // For printf
-#include <unistd.h> // For sbrk
-#include <cstring>  // For strcmp
+#include <cstdio>  
+#include <unistd.h> 
+#include <cstring>  
 #include <stack>
 #include <list>
-#include <cstdlib> // For exit() and EXIT_FAILURE
+#include <cstdlib> 
 
 // Global variables for free list and allocated list
-std::list<allocation *> free_list;      // Using std::list for free chunks
-std::list<allocation *> allocated_list; // Using std::list for allocated chunks
-AllocationStrategy current_strategy;
+std::list<allocation *> free_list;      // Linked list for free chunks
+std::list<allocation *> allocated_list; // Linked list for allocated chunks
+AllocationStrategy current_strategy; // To check which strategy (BESTFIT OR FIRSTFIT)
 
-bool error_occurred = false;
+bool error_occurred = false; //Global flag to check for errors
 
 // Function to round up the requested size to the nearest partition (32, 64, 128, 256, or 512)
 std::size_t get_partition_size(std::size_t requested_size)
@@ -28,40 +28,39 @@ std::size_t get_partition_size(std::size_t requested_size)
 }
 
 void *alloc(std::size_t requested_size) {
-    // Step 1: Get the appropriate partition size
-    std::size_t chunk_size = get_partition_size(requested_size);
+    std::size_t chunk_size = get_partition_size(requested_size); // Get the appropriate partition size
 
-    // Step 2: Search the free list for a suitable chunk using the current strategy
+    // Searching the free list for a suitable chunk using the current strategy
     allocation *selected_chunk = nullptr;
     if (current_strategy == FIRST_FIT) {
-        selected_chunk = first_fit(chunk_size);
+        selected_chunk = first_fit(chunk_size); // Uses first_fit
     }
     else if (current_strategy == BEST_FIT) {
-        selected_chunk = best_fit(chunk_size);
+        selected_chunk = best_fit(chunk_size); // Uses best_fit
     }
 
-    // Step 3: If no suitable chunk is found, request memory from the OS
+    // Request memory from the OS if no suitable chunk is found
     if (selected_chunk == nullptr) {
-        void *new_memory = sbrk(chunk_size);
-        if (new_memory == (void *)-1) {
+        void *new_memory = sbrk(chunk_size); // sbrk requests memory from the OS
+        if (new_memory == (void *)-1) { // Error if sbrk fails
             printf("Error: Memory allocation failed\n");
             return nullptr;
         }
         selected_chunk = new allocation; // Dynamically allocate memory for allocation struct
-        selected_chunk->partition_size = chunk_size;
-        selected_chunk->requested_size = requested_size;
-        selected_chunk->space = new_memory;
+        selected_chunk->partition_size = chunk_size; // Store the partition size
+        selected_chunk->requested_size = requested_size; // Store the actual requested size
+        selected_chunk->space = new_memory; // Store the allocated memory address
     }
     else {
-        // Remove the selected chunk from the free list
+        // Remove the selected chunk from the free list if a suitable chunk found in free list
         free_list.remove(selected_chunk);
         selected_chunk->requested_size = requested_size;
     }
 
-    // Step 4: Add the chunk to the allocated list
+    // Adding the chunk to the allocated list
     allocated_list.push_back(selected_chunk);
 
-    return selected_chunk->space;
+    return selected_chunk->space; // Returns allocated memory pointer
 }
 
 void dealloc(void *chunk) {
