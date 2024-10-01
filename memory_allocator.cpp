@@ -34,21 +34,17 @@ void *alloc(std::size_t requested_size)
 
     // Step 2: Search the free list for a suitable chunk using the current strategy
     allocation *selected_chunk = nullptr;
-    if (current_strategy == FIRST_FIT)
-    {
+    if (current_strategy == FIRST_FIT) {
         selected_chunk = first_fit(chunk_size);
     }
-    else if (current_strategy == BEST_FIT)
-    {
+    else if (current_strategy == BEST_FIT) {
         selected_chunk = best_fit(chunk_size);
     }
 
     // Step 3: If no suitable chunk is found, request memory from the OS
-    if (selected_chunk == nullptr)
-    {
+    if (selected_chunk == nullptr) {
         void *new_memory = sbrk(chunk_size);
-        if (new_memory == (void *)-1)
-        {
+        if (new_memory == (void *)-1) {
             printf("Error: Memory allocation failed\n");
             return nullptr;
         }
@@ -57,8 +53,7 @@ void *alloc(std::size_t requested_size)
         selected_chunk->requested_size = requested_size;
         selected_chunk->space = new_memory;
     }
-    else
-    {
+    else {
         // Remove the selected chunk from the free list
         free_list.remove(selected_chunk);
         selected_chunk->requested_size = requested_size;
@@ -69,22 +64,18 @@ void *alloc(std::size_t requested_size)
 
     return selected_chunk->space;
 }
-void dealloc(void *chunk)
-{
+void dealloc(void *chunk) {
     // Step 1: Find and remove the chunk from the allocated list
     std::list<allocation *>::iterator it = allocated_list.begin();
-    while (it != allocated_list.end())
-    {
-        if ((*it)->space == chunk)
-        {
+    while (it != allocated_list.end()) {
+        if ((*it)->space == chunk) {
             break; // Found the chunk
         }
         ++it;
     }
 
     // Step 2: Error handling if the chunk is not found
-    if (it == allocated_list.end())
-    {
+    if (it == allocated_list.end()) {
         printf("Error: Attempt to deallocate unallocated memory at %p\n", chunk);
         exit(EXIT_FAILURE);
     }
@@ -97,13 +88,11 @@ void dealloc(void *chunk)
 }
 
 // Function to set the current allocation strategy (First-Fit or Best-Fit)
-void set_allocation_strategy(AllocationStrategy strategy)
-{
+void set_allocation_strategy(AllocationStrategy strategy) {
     current_strategy = strategy;
 }
 
-void print_allocated_list()
-{
+void print_allocated_list() {
     printf("Allocated List:\n");
     for (allocation *a : allocated_list)
     {
@@ -111,8 +100,7 @@ void print_allocated_list()
     }
 }
 
-void print_free_list()
-{
+void print_free_list() {
     printf("Free List:\n");
     for (allocation *a : free_list)
     {
@@ -123,12 +111,10 @@ void print_free_list()
 // Function to process a data file with alloc and dealloc commands
 std::stack<void *> allocated_stack;
 
-void process_datafile(const char *filename)
-{
+void process_datafile(const char *filename) {
     // Open the file
     FILE *file = fopen(filename, "r");
-    if (!file)
-    {
+    if (!file) {
         printf("Error: Could not open file %s\n", filename);
         error_occurred = true;
         return;
@@ -138,32 +124,26 @@ void process_datafile(const char *filename)
     std::size_t size;
 
     // Read each line (assume alloc or dealloc command format)
-    while (fscanf(file, "%s %zu", command, &size) != EOF)
-    {
-        if (strcmp(command, "alloc:") == 0)
-        {
+    while (fscanf(file, "%s %zu", command, &size) != EOF) {
+        if (strcmp(command, "alloc:") == 0) {
             // Allocate memory and store the address in the stack
             void *ptr = alloc(size);
             allocated_stack.push(ptr); // Push the allocated address to the stack
-            if (ptr == nullptr)
-            {
+            if (ptr == nullptr) {
                 printf("Error: Memory allocation failed\n");
                 error_occurred = true; // Set error flag
                 fclose(file);
                 return; // Exit on allocation error
             }
         }
-        else if (strcmp(command, "dealloc") == 0)
-        {
+        else if (strcmp(command, "dealloc") == 0) {
             // Deallocate the most recent allocation (LIFO)
-            if (!allocated_stack.empty())
-            {
+            if (!allocated_stack.empty()) {
                 void *address_to_free = allocated_stack.top();
                 allocated_stack.pop(); // Remove the address from the stack
                 dealloc(address_to_free);
             }
-            else
-            {
+            else {
                 printf("Error: No more memory to deallocate\n");
                 error_occurred = true;
                 fclose(file);
