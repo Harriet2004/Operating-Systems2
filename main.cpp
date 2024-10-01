@@ -22,12 +22,12 @@ int main(int argc, char *argv[]) {
     // Ensures correct number of arguments
     if (argc != 2) {
         printf("Error: Incorrect number of arguments.\n");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Sets the allocation strategy
     if (!set_strategy(argv[0])) {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Process the datafile with alloc and dealloc commands
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         printf("Error: Failed to process datafile '%s'.\n", argv[1]);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     return 0;
