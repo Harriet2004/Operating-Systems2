@@ -25,15 +25,12 @@ void *alloc(std::size_t requested_size) {
     // Step 1: Get the appropriate partition size
     std::size_t chunk_size = get_partition_size(requested_size);
 
-    // Step 2: Search the free list for a suitable chunk
+    // Step 2: Search the free list for a suitable chunk using the current strategy
     allocation* selected_chunk = nullptr;
-    auto it = free_list.begin();
-    for (; it != free_list.end(); ++it) {
-        if ((*it)->partition_size >= chunk_size) {
-            selected_chunk = *it;      // Found a suitable chunk (pointer)
-            free_list.erase(it);       // Remove from the free list
-            break;
-        }
+    if (current_strategy == FIRST_FIT) {
+        selected_chunk = first_fit(chunk_size);
+    } else if (current_strategy == BEST_FIT) {
+        selected_chunk = best_fit(chunk_size);
     }
 
     // Step 3: If no suitable chunk is found, request memory from the OS
@@ -48,16 +45,16 @@ void *alloc(std::size_t requested_size) {
         selected_chunk->requested_size = requested_size;
         selected_chunk->space = new_memory;
     } else {
+        // Remove the selected chunk from the free list
+        free_list.remove(selected_chunk);
         selected_chunk->requested_size = requested_size;
     }
 
-    // Step 4: Add the chunk to the allocated list (as a pointer)
+    // Step 4: Add the chunk to the allocated list
     allocated_list.push_back(selected_chunk);
 
     return selected_chunk->space;
 }
-
-
 void dealloc(void *chunk) {
     // Step 1: Find and remove the chunk from the allocated list
     std::list<allocation*>::iterator it = allocated_list.begin();
