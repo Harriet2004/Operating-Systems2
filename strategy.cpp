@@ -1,37 +1,51 @@
 #include "memory_allocator.h"
-#include <list> // For std::list
+#include <list> // Includes the list library to use std::list for managing memory blocks
 
-// Function to find the first chunk that fits the requested size
+// Defines the function that finds and returns the first chunk of memory that fits the requested size
 allocation *first_fit(std::size_t chunk_size)
 {
-    // Traverse through the free list to find the first suitable chunk
-    std::list<allocation*>::iterator it;
-    for (it = free_list.begin(); it != free_list.end(); ++it) {
-        if ((*it)->partition_size >= chunk_size) {
-            return *it; // Return the pointer to the suitable chunk
+    // Declares an iterator to traverse through the list of free memory chunks
+    std::list<allocation *>::iterator it;
+
+    // Iterates through the free_list to search for the first suitable chunk of memory
+    for (it = free_list.begin(); it != free_list.end(); ++it)
+    {
+        // Checks if the current chunk's size is large enough to satisfy the requested chunk size
+        if ((*it)->partition_size >= chunk_size)
+        {
+            // Returns the pointer to the first suitable chunk found in the free list
+            return *it;
         }
     }
 
-    // No suitable chunk found, return nullptr
+    // If no suitable chunk is found, returns nullptr to indicate failure to find an appropriate block
     return nullptr;
 }
 
-// Function to find the best chunk that fits the requested size
+// Defines the function that finds and returns the best chunk of memory that fits the requested size
 allocation *best_fit(std::size_t chunk_size)
 {
+    // Declares a pointer to store the best fitting chunk found so far, initialized to nullptr (no chunk found yet)
     allocation *best_chunk = nullptr;
-    std::list<allocation*>::iterator it;
 
-    // Traverse through the free list to find the best suitable chunk
-    for (it = free_list.begin(); it != free_list.end(); ++it) {
-        if ((*it)->partition_size >= chunk_size) {
-            // If no best chunk has been found yet, or if the current chunk is smaller than the best found chunk
-            if (best_chunk == nullptr || (*it)->partition_size < best_chunk->partition_size) {
-                best_chunk = *it; // Update best chunk
+    // Declares an iterator to traverse through the list of free memory chunks
+    std::list<allocation *>::iterator it;
+
+    // Iterates through the free_list to search for the best fitting chunk of memory
+    for (it = free_list.begin(); it != free_list.end(); ++it)
+    {
+        // Checks if the current chunk's size is large enough to satisfy the requested chunk size
+        if ((*it)->partition_size >= chunk_size)
+        {
+            // Checks if best_chunk is still nullptr (no chunk found yet) or if the current chunk is a better fit (smaller but still large enough)
+            if (best_chunk == nullptr || (*it)->partition_size < best_chunk->partition_size)
+            {
+                // Updates best_chunk to point to the current chunk, since it's the best fit found so far
+                best_chunk = *it;
             }
         }
     }
 
-    // Return the best fitting chunk, or nullptr if none is found
+    // Returns the best fitting chunk found, or nullptr if no suitable chunk was found during the traversal
     return best_chunk;
 }
