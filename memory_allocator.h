@@ -19,8 +19,6 @@ enum AllocationStrategy
     BEST_FIT   // Strategy where the smallest suitable block is selected
 };
 
-// Function declarations for memory management operations
-
 // Allocates memory of the specified size, rounded to the nearest partition size
 void *alloc(std::size_t chunk_size);
 
@@ -52,4 +50,4 @@ extern std::list<allocation *> allocated_list; // List of currently allocated me
 // Global flag that tracks whether any errors have occurred during memory operations
 extern bool error_occurred;
 
-#endif // Ends  MEMORY_ALLOCATOR_H
+#endif 

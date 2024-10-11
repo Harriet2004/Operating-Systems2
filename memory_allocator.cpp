@@ -1,10 +1,10 @@
 #include "memory_allocator.h"
-#include <cstdio>   // Includes standard input/output functions such as printf
-#include <unistd.h> // Includes sbrk for memory allocation from the OS
-#include <cstring>  // Includes string handling functions like strcmp
-#include <stack>    // Includes stack for tracking memory allocations
-#include <list>     // Includes list for managing free and allocated memory chunks
-#include <cstdlib>  // Includes standard library functions like exit and EXIT_FAILURE
+#include <cstdio>   
+#include <unistd.h> 
+#include <cstring>  
+#include <stack>    
+#include <list>     
+#include <cstdlib>  
 
 // Global variables to maintain free and allocated memory chunks
 std::list<allocation *> free_list;      // Stores free memory chunks
