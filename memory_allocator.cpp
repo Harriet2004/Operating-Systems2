@@ -127,6 +127,30 @@ void print_free_list()
     }
 }
 
+// Function to free all allocated chunks
+void free_allocated_list()
+{
+    for (allocation *a : allocated_list)
+    {
+        // Free the memory for the allocation struct
+        delete a;
+    }
+    // Clear the list after deallocating memory
+    allocated_list.clear();
+}
+
+// Function to free all free chunks
+void free_free_list()
+{
+    for (allocation *a : free_list)
+    {
+        // Free the memory for the allocation struct
+        delete a;
+    }
+    // Clear the list after deallocating memory
+    free_list.clear();
+}
+
 // Processes a data file with alloc and dealloc commands, simulating memory operations
 std::stack<void *> allocated_stack; // Stack used to track the order of allocated memory chunks
 

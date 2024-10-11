@@ -18,5 +18,8 @@ int main(int argc, char *argv[])
         print_free_list();
     }
 
+    free_allocated_list();
+    free_free_list();
+
     return EXIT_SUCCESS;
 }

@@ -1,6 +1,7 @@
 #ifndef MEMORY_ALLOCATOR_H
 #define MEMORY_ALLOCATOR_H
 
+#include <cstdlib>
 #include <cstddef> // Includes standard definitions for data types like size_t
 #include <list>    // Includes the list library to manage memory allocations in lists
 
@@ -36,6 +37,10 @@ void print_allocated_list();
 
 // Prints the list of free memory chunks, showing addresses and sizes
 void print_free_list();
+
+void free_free_list();
+
+void free_allocated_list();
 
 // Finds the first chunk of free memory that fits the requested size (First Fit strategy)
 allocation *first_fit(std::size_t chunk_size);
