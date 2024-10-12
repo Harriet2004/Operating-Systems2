@@ -2,8 +2,8 @@
 #define MEMORY_ALLOCATOR_H
 
 #include <cstdlib>
-#include <cstddef> // Includes standard definitions for data types like size_t
-#include <list>    // Includes the list library to manage memory allocations in lists
+#include <cstddef> 
+#include <list>  
 
 // Struct that represents a memory allocation
 struct allocation
