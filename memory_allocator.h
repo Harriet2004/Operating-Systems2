@@ -6,16 +6,14 @@
 #include <list>  
 
 // Struct that represents a memory allocation
-struct allocation
-{
+struct allocation {
     std::size_t partition_size; // Stores the total size of the memory partition
     std::size_t requested_size; // Stores the actual size requested by the user
     void *space;                // Pointer to the allocated memory block
 };
 
 // Enum that defines the available memory allocation strategies
-enum AllocationStrategy
-{
+enum AllocationStrategy {
     FIRST_FIT, // Strategy where the first suitable block is selected
     BEST_FIT   // Strategy where the smallest suitable block is selected
 };

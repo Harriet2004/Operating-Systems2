@@ -2,11 +2,9 @@
 #include <cstdio> // Includes the standard input/output functions like printf
 
 // The main function for executing the First-Fit memory allocation strategy
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     // Checks if the correct number of command-line arguments is provided
-    if (argc != 2)
-    {
+    if (argc != 2) {
         // If the wrong number of arguments is provided, prints usage instructions and exits with failure status
         printf("Usage: firstfit <datafile>\n");
         return EXIT_FAILURE;
@@ -19,8 +17,7 @@ int main(int argc, char *argv[])
     process_datafile(argv[1]);
 
     // If no errors occurred during the execution, prints the list of allocated and free memory chunks
-    if (!error_occurred)
-    {
+    if (!error_occurred) {
         print_allocated_list(); // Prints the list of allocated memory chunks
         print_free_list();      // Prints the list of free memory chunks
     }

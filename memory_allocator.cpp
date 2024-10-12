@@ -13,8 +13,7 @@ AllocationStrategy current_strategy;    // Stores the current memory allocation 
 bool error_occurred = false;            // Tracks whether any errors have occurred during execution
 
 // Rounds up the requested size to the nearest predefined partition size (32, 64, 128, 256, or 512 bytes)
-std::size_t get_partition_size(std::size_t requested_size)
-{
+std::size_t get_partition_size(std::size_t requested_size) {
     if (requested_size <= 32)
         return 32; // Returns 32 bytes for requests up to 32 bytes
     if (requested_size <= 64)
@@ -27,28 +26,23 @@ std::size_t get_partition_size(std::size_t requested_size)
 }
 
 // Allocates memory based on the requested size, following the chosen allocation strategy
-void *alloc(std::size_t requested_size)
-{
+void *alloc(std::size_t requested_size) {
     // Determines the appropriate partition size for the request
     std::size_t chunk_size = get_partition_size(requested_size);
 
     // Searches the free list for a suitable memory chunk using the current strategy (FIRST_FIT or BEST_FIT)
     allocation *selected_chunk = nullptr;
-    if (current_strategy == FIRST_FIT)
-    {
+    if (current_strategy == FIRST_FIT) {
         selected_chunk = first_fit(chunk_size); // Finds the first chunk that fits
     }
-    else if (current_strategy == BEST_FIT)
-    {
+    else if (current_strategy == BEST_FIT) {
         selected_chunk = best_fit(chunk_size); // Finds the best-fitting chunk
     }
 
     // If no suitable chunk is found, requests new memory from the operating system
-    if (selected_chunk == nullptr)
-    {
+    if (selected_chunk == nullptr) {
         void *new_memory = sbrk(chunk_size); // Expands the heap by the required chunk size
-        if (new_memory == (void *)-1)
-        { // Checks if the memory allocation failed
+        if (new_memory == (void *)-1) { // Checks if the memory allocation failed
             printf("Error: Memory allocation failed\n");
             return nullptr; // Returns null if memory could not be allocated
         }
@@ -57,8 +51,7 @@ void *alloc(std::size_t requested_size)
         selected_chunk->requested_size = requested_size; // Sets the actual requested size
         selected_chunk->space = new_memory;              // Points to the newly allocated memory
     }
-    else
-    {
+    else {
         // Removes the selected chunk from the free list and prepares it for allocation
         free_list.remove(selected_chunk);                // Removes the chunk from the free list
         selected_chunk->requested_size = requested_size; // Updates the chunk with the requested size
@@ -71,22 +64,18 @@ void *alloc(std::size_t requested_size)
 }
 
 // Deallocates a previously allocated memory chunk and returns it to the free list
-void dealloc(void *chunk)
-{
+void dealloc(void *chunk) {
     // Searches the allocated list to find the chunk corresponding to the provided memory address
     std::list<allocation *>::iterator it = allocated_list.begin();
-    while (it != allocated_list.end())
-    {
-        if ((*it)->space == chunk)
-        {
+    while (it != allocated_list.end()) {
+        if ((*it)->space == chunk) {
             break; // Stops the loop once the chunk is found
         }
         ++it; // Moves to the next chunk in the list
     }
 
     // Handles the case where the chunk is not found in the allocated list
-    if (it == allocated_list.end())
-    {
+    if (it == allocated_list.end()) {
         printf("Error: Attempt to deallocate unallocated memory at %p\n", chunk);
         error_occurred = true; // Sets the error flag
         return;                // Exits the function without deallocating
@@ -100,38 +89,31 @@ void dealloc(void *chunk)
 }
 
 // Sets the current memory allocation strategy (e.g., FIRST_FIT or BEST_FIT)
-void set_allocation_strategy(AllocationStrategy strategy)
-{
+void set_allocation_strategy(AllocationStrategy strategy) {
     current_strategy = strategy; // Updates the current strategy based on user input
 }
 
 // Prints the list of allocated memory chunks, displaying their addresses and sizes
-void print_allocated_list()
-{
+void print_allocated_list() {
     printf("Allocated List:\n"); // Prints the header for the allocated list
-    for (allocation *a : allocated_list)
-    {
+    for (allocation *a : allocated_list) {
         // Prints the address, total size, and used size for each allocated chunk
         printf("Address: %p, Total Size: %zu bytes, Used Size: %zu bytes\n", a->space, a->partition_size, a->requested_size);
     }
 }
 
 // Prints the list of free memory chunks, displaying their addresses and sizes
-void print_free_list()
-{
+void print_free_list() {
     printf("Free List:\n"); // Prints the header for the free list
-    for (allocation *a : free_list)
-    {
+    for (allocation *a : free_list) {
         // Prints the address and total size for each free chunk
         printf("Address: %p, Total Size: %zu bytes\n", a->space, a->partition_size);
     }
 }
 
 // Function to free all allocated chunks
-void free_allocated_list()
-{
-    for (allocation *a : allocated_list)
-    {
+void free_allocated_list() {
+    for (allocation *a : allocated_list) {
         // Free the memory for the allocation struct
         delete a;
     }
@@ -140,10 +122,8 @@ void free_allocated_list()
 }
 
 // Function to free all free chunks
-void free_free_list()
-{
-    for (allocation *a : free_list)
-    {
+void free_free_list() {
+    for (allocation *a : free_list) {
         // Free the memory for the allocation struct
         delete a;
     }
@@ -154,12 +134,10 @@ void free_free_list()
 // Processes a data file with alloc and dealloc commands, simulating memory operations
 std::stack<void *> allocated_stack; // Stack used to track the order of allocated memory chunks
 
-void process_datafile(const char *filename)
-{
+void process_datafile(const char *filename) {
     // Opens the data file for reading
     FILE *file = fopen(filename, "r");
-    if (!file)
-    {
+    if (!file) {
         // Handles file opening failure
         printf("Error: Could not open file %s\n", filename);
         error_occurred = true; // Sets the error flag
@@ -170,15 +148,12 @@ void process_datafile(const char *filename)
     std::size_t size; // Variable to store the requested memory size
 
     // Reads and processes each line from the data file
-    while (fscanf(file, "%s %zu", command, &size) != EOF)
-    {
-        if (strcmp(command, "alloc:") == 0)
-        {
+    while (fscanf(file, "%s %zu", command, &size) != EOF) {
+        if (strcmp(command, "alloc:") == 0) {
             // Allocates memory and pushes the pointer onto the stack
             void *ptr = alloc(size);   // Allocates memory of the specified size
             allocated_stack.push(ptr); // Tracks the allocated memory in the stack
-            if (ptr == nullptr)
-            {
+            if (ptr == nullptr) {
                 // Handles memory allocation failure
                 printf("Error: Memory allocation failed\n");
                 error_occurred = true; // Sets the error flag
@@ -186,17 +161,14 @@ void process_datafile(const char *filename)
                 return;                // Exits the function on allocation error
             }
         }
-        else if (strcmp(command, "dealloc") == 0)
-        {
+        else if (strcmp(command, "dealloc") == 0) {
             // Deallocates the most recent memory chunk (LIFO order)
-            if (!allocated_stack.empty())
-            {
+            if (!allocated_stack.empty()) {
                 void *address_to_free = allocated_stack.top(); // Retrieves the most recently allocated memory
                 allocated_stack.pop();                         // Removes the address from the stack
                 dealloc(address_to_free);                      // Deallocates the memory
             }
-            else
-            {
+            else {
                 // Handles the case where there is no memory left to deallocate
                 printf("Error: No more memory to deallocate\n");
                 error_occurred = true; // Sets the error flag
