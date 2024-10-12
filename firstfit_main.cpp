@@ -10,14 +10,15 @@ int main(int argc, char *argv[])
     }
 
     set_allocation_strategy(FIRST_FIT); // Set strategy to FIRST_FIT
-    process_datafile(argv[1]);
+    process_datafile(argv[1]); // Processes the datafile
 
-    if (!error_occurred)
+    if (!error_occurred) // If no errors, print out the output
     {
         print_allocated_list();
         print_free_list();
     }
-    
+
+    // Free all allocated and free memory blocks to prevent memory leaks
     free_allocated_list();
     free_free_list();
 
