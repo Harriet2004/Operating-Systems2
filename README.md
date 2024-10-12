@@ -1,4 +1,3 @@
-````markdown
 # Project 2 - Memory Allocation
 
 ## Overview
@@ -24,7 +23,7 @@ To compile the project, run the following command:
 
 ```bash
 make all
-```
+
 ````
 
 This will generate two executables: `firstfit` and `bestfit`.
