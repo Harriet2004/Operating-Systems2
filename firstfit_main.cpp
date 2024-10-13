@@ -1,5 +1,5 @@
 #include "memory_allocator.h"
-#include <cstdio> // Includes the standard input/output functions like printf
+#include <cstdio> 
 
 // The main function for executing the First-Fit memory allocation strategy
 int main(int argc, char *argv[]) {
@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
 
     // If no errors occurred during the execution, prints the list of allocated and free memory chunks
     if (!error_occurred) {
-        print_allocated_list(); // Prints the list of allocated memory chunks
-        print_free_list();      // Prints the list of free memory chunks
+        print_allocated_list(); 
+        print_free_list();      
     }
 
     // Frees the memory associated with the allocated list and the free list before exiting

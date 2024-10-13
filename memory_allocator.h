@@ -14,8 +14,8 @@ struct allocation {
 
 // Enum that defines the available memory allocation strategies
 enum AllocationStrategy {
-    FIRST_FIT, // Strategy where the first suitable block is selected
-    BEST_FIT   // Strategy where the smallest suitable block is selected
+    FIRST_FIT, 
+    BEST_FIT   
 };
 
 // Allocates memory of the specified size, rounded to the nearest partition size
@@ -36,9 +36,11 @@ void print_allocated_list();
 // Prints the list of free memory chunks, showing addresses and sizes
 void print_free_list();
 
-void free_free_list();
-
+// Frees all memory allocated for the allocated list
 void free_allocated_list();
+
+// Frees all memory allocated for the free list
+void free_free_list();
 
 // Finds the first chunk of free memory that fits the requested size (First Fit strategy)
 allocation *first_fit(std::size_t chunk_size);

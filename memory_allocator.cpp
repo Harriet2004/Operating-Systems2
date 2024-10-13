@@ -15,14 +15,14 @@ bool error_occurred = false;            // Tracks whether any errors have occurr
 // Rounds up the requested size to the nearest predefined partition size (32, 64, 128, 256, or 512 bytes)
 std::size_t get_partition_size(std::size_t requested_size) {
     if (requested_size <= 32)
-        return 32; // Returns 32 bytes for requests up to 32 bytes
+        return 32; 
     if (requested_size <= 64)
-        return 64; // Returns 64 bytes for requests up to 64 bytes
+        return 64; 
     if (requested_size <= 128)
-        return 128; // Returns 128 bytes for requests up to 128 bytes
+        return 128; 
     if (requested_size <= 256)
-        return 256; // Returns 256 bytes for requests up to 256 bytes
-    return 512;     // Returns 512 bytes for requests larger than 256 bytes
+        return 256; 
+    return 512;     
 }
 
 // Allocates memory based on the requested size, following the chosen allocation strategy
@@ -33,10 +33,10 @@ void *alloc(std::size_t requested_size) {
     // Searches the free list for a suitable memory chunk using the current strategy (FIRST_FIT or BEST_FIT)
     allocation *selected_chunk = nullptr;
     if (current_strategy == FIRST_FIT) {
-        selected_chunk = first_fit(chunk_size); // Finds the first chunk that fits
+        selected_chunk = first_fit(chunk_size);
     }
     else if (current_strategy == BEST_FIT) {
-        selected_chunk = best_fit(chunk_size); // Finds the best-fitting chunk
+        selected_chunk = best_fit(chunk_size); 
     }
 
     // If no suitable chunk is found, requests new memory from the operating system
@@ -77,15 +77,15 @@ void dealloc(void *chunk) {
     // Handles the case where the chunk is not found in the allocated list
     if (it == allocated_list.end()) {
         printf("Error: Attempt to deallocate unallocated memory at %p\n", chunk);
-        error_occurred = true; // Sets the error flag
-        return;                // Exits the function without deallocating
+        error_occurred = true; 
+        return;               
     }
 
     // Adds the deallocated chunk back to the free list
-    free_list.push_back(*it); // Returns the chunk to the free list
+    free_list.push_back(*it);
 
     // Removes the chunk from the allocated list
-    allocated_list.erase(it); // Erases the chunk from the allocated list
+    allocated_list.erase(it); 
 }
 
 // Sets the current memory allocation strategy (e.g., FIRST_FIT or BEST_FIT)
@@ -95,18 +95,16 @@ void set_allocation_strategy(AllocationStrategy strategy) {
 
 // Prints the list of allocated memory chunks, displaying their addresses and sizes
 void print_allocated_list() {
-    printf("Allocated List:\n"); // Prints the header for the allocated list
+    printf("Allocated List:\n"); 
     for (allocation *a : allocated_list) {
-        // Prints the address, total size, and used size for each allocated chunk
         printf("Address: %p, Total Size: %zu bytes, Used Size: %zu bytes\n", a->space, a->partition_size, a->requested_size);
     }
 }
 
 // Prints the list of free memory chunks, displaying their addresses and sizes
 void print_free_list() {
-    printf("Free List:\n"); // Prints the header for the free list
+    printf("Free List:\n"); 
     for (allocation *a : free_list) {
-        // Prints the address and total size for each free chunk
         printf("Address: %p, Total Size: %zu bytes\n", a->space, a->partition_size);
     }
 }
@@ -114,7 +112,6 @@ void print_free_list() {
 // Function to free all allocated chunks
 void free_allocated_list() {
     for (allocation *a : allocated_list) {
-        // Free the memory for the allocation struct
         delete a;
     }
     // Clear the list after deallocating memory
@@ -124,7 +121,6 @@ void free_allocated_list() {
 // Function to free all free chunks
 void free_free_list() {
     for (allocation *a : free_list) {
-        // Free the memory for the allocation struct
         delete a;
     }
     // Clear the list after deallocating memory
@@ -133,15 +129,14 @@ void free_free_list() {
 
 // Processes a data file with alloc and dealloc commands, simulating memory operations
 std::stack<void *> allocated_stack; // Stack used to track the order of allocated memory chunks
-
 void process_datafile(const char *filename) {
     // Opens the data file for reading
     FILE *file = fopen(filename, "r");
     if (!file) {
         // Handles file opening failure
         printf("Error: Could not open file %s\n", filename);
-        error_occurred = true; // Sets the error flag
-        return;                // Exits the function if the file could not be opened
+        error_occurred = true; 
+        return;                
     }
 
     char command[10]; // Buffer to store the command from the file (alloc or dealloc)
@@ -150,34 +145,32 @@ void process_datafile(const char *filename) {
     // Reads and processes each line from the data file
     while (fscanf(file, "%s %zu", command, &size) != EOF) {
         if (strcmp(command, "alloc:") == 0) {
-            // Allocates memory and pushes the pointer onto the stack
             void *ptr = alloc(size);   // Allocates memory of the specified size
             allocated_stack.push(ptr); // Tracks the allocated memory in the stack
             if (ptr == nullptr) {
                 // Handles memory allocation failure
                 printf("Error: Memory allocation failed\n");
-                error_occurred = true; // Sets the error flag
-                fclose(file);          // Closes the file before exiting
-                return;                // Exits the function on allocation error
+                error_occurred = true; 
+                fclose(file);          
+                return;                
             }
         }
         else if (strcmp(command, "dealloc") == 0) {
             // Deallocates the most recent memory chunk (LIFO order)
             if (!allocated_stack.empty()) {
-                void *address_to_free = allocated_stack.top(); // Retrieves the most recently allocated memory
+                void *address_to_free = allocated_stack.top(); // Retrieves the most recently allocated memory (testing purposes)
                 allocated_stack.pop();                         // Removes the address from the stack
                 dealloc(address_to_free);                      // Deallocates the memory
             }
             else {
                 // Handles the case where there is no memory left to deallocate
                 printf("Error: No more memory to deallocate\n");
-                error_occurred = true; // Sets the error flag
-                fclose(file);          // Closes the file before exiting
-                return;                // Exits the function when there is nothing to deallocate
+                error_occurred = true; 
+                fclose(file);          
+                return;                
             }
         }
     }
-
     // Closes the data file after processing all commands
     fclose(file);
 }
