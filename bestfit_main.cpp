@@ -1,5 +1,6 @@
 #include "memory_allocator.h"
 #include <cstdio> 
+#include <cstdlib>
 
 // The main function for executing the Best-Fit memory allocation strategy
 int main(int argc, char *argv[]) {
