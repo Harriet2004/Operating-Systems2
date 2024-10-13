@@ -8,6 +8,13 @@ This project simulates memory management in operating systems using the **First-
 - **Best-Fit Allocation Strategy**: Allocates the smallest free block that fits the requested memory size to minimize fragmentation.
 - **Dynamic Memory Management**: Tracks allocated and free blocks in linked lists and simulates allocation/deallocation.
 
+## File Transfer to Server
+To transfer files to teaching servers, use the following scp commands:
+To copy files:
+scp <file_name> <server_name>:<destination_directory_name>
+To copy directories:
+scp -r <source_directory_name> <server_name>:<destination_directory_name> 
+
 ## Compilation
 To compile the project, run the following command:
 make all
@@ -53,7 +60,7 @@ We use `valgrind` to check for memory leaks and ensure proper memory deallocatio
 ### To check for memory leaks:
 - For **firstfit**:
   valgrind --leak-check=full ./firstfit datafile
-  
+
 - For **bestfit**:
   valgrind --leak-check=full ./bestfit datafile
 
