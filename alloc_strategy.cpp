@@ -1,8 +1,10 @@
 #include "memory_allocator.h"
-#include <list> // Includes the list library to use std::list for managing memory blocks
+#include <list>   // Includes the list library to use std::list for managing memory blocks
+#include <limits> // Includes the numeric_limits template for std::size_t max value
 
 // Defines the function that finds and returns the first chunk of memory that fits the requested size
-allocation *first_fit(std::size_t chunk_size) {
+allocation *first_fit(std::size_t chunk_size)
+{
     // Declares an iterator to traverse through the list of free memory chunks
     std::list<allocation *>::iterator it;
 
