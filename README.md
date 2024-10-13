@@ -24,7 +24,17 @@ This will generate two executables: `firstfit` and `bestfit`.
 To clean the directory and remove compiled files, run:
 make clean
 
+## Generating Input Files
+To generate test sequences of memory allocation and deallocation commands:
+chmod +x p2_gen.sh
+./p2_gen.sh 20 > datafile
+where datafile is the name of the file which has the commands required to be carried out. [Name of the file can be anything]
+
+For this example, this will create a file named `datafile` with 20 interleaved `alloc` and `dealloc` commands for testing.
+
 ## Running the Program
+For this program, we will be using the file 'datafile', if any other file has to be created, it can be done with the commands given above
+
 To run the program with the **First-Fit** strategy:
 ./firstfit datafile
 where datafile is the name of the file which has the commands required to be carried out.
@@ -45,14 +55,6 @@ Address: 0x4224180, Total Size: 512 bytes, Used Size: 150 bytes
 
 Free List:
 Address: 0x4224080, Total Size: 256 bytes
-
-## Generating Input Files
-To generate test sequences of memory allocation and deallocation commands:
-chmod +x p2_gen.sh
-./p2_gen.sh 20 > datafile
-where datafile is the name of the file which has the commands required to be carried out. [Name of the file can be anything]
-
-For this example, his will create a file named `datafile` with 20 interleaved `alloc` and `dealloc` commands for testing.
 
 ## Memory Leak Checking
 We use `valgrind` to check for memory leaks and ensure proper memory deallocation.
