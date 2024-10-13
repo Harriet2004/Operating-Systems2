@@ -17,11 +17,16 @@ int main(int argc, char *argv[]) {
     // Processes the commands in the datafile (e.g., alloc and dealloc commands)
     process_datafile(argv[1]);
 
-    // If no errors occurred during the execution, prints the list of allocated and free memory chunks
-    if (!error_occurred) {
-        print_allocated_list(); 
-        print_free_list();      
+    // If errors occurred during the execution, free the memory and exits with failure status
+    if (error_occurred) {
+        free_allocated_list();
+        free_free_list();
+        return EXIT_FAILURE;
     }
+
+    // If no errors occurred, print both the allocated and free lists
+    print_allocated_list(); 
+    print_free_list();      
 
     // Frees the memory associated with the allocated list and the free list before exiting
     free_allocated_list();
